@@ -2,6 +2,7 @@
   "name": "hello-world",
   "version": "0.1.0",
   "private": true,
+  "homepage": "http://localhost:3000/react",
   "devDependencies": {
     "react-scripts": "0.8.5"
   },
