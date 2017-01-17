@@ -22,3 +22,28 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #589636;
+}
+
+.json {
+  font: 12px "Lucida Console", Menlo, monospace, Consolas;
+}
+
+.errorMessage {
+  font-weight: bold;
+  color: red;
+}
+
+.warningMessage {
+  color: brown;
+}
+.successMessage {
+  color: green;
+}

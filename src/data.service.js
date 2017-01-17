@@ -108,7 +108,241 @@ export class DataService {
                 "MongoDBURIRedacted": MongoDBURIRedacted});
     }
 
+    sendCountDocs(CollName) {
 
+        /*
+        Use the Mongopop API to count the number of documents in the specified
+        collection.
+        */
 
+        let _this = this;
 
+        return new Promise(function(resolve, reject) {
+            var xhr = new XMLHttpRequest();
+            console.log("In sendCountDocs");
+            console.log("baseURL = " + _this.baseURL);
+
+            xhr.open('POST', _this.baseURL + "/countDocs", true);
+            xhr.setRequestHeader("Content-type", "application/json;charset=UTF-8");
+            xhr.send(JSON.stringify({
+                MongoDBURI:     _this.MongoDBURI,
+                collectionName: CollName 
+            }));
+            xhr.addEventListener("readystatechange", processRequest, false);
+            xhr.onreadystatechange = processRequest;
+            xhr.onerror = processError;
+            xhr.onabort = processError;
+
+            function processRequest(e) {
+                let errorText = null;
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        console.log(xhr.responseText);
+                        var response = JSON.parse(xhr.responseText);
+                        if (response.success) {
+                            return resolve(response.count);
+                        } else {
+                            errorText = "App failure: " + response.error;
+                        }
+                    } else {
+                        errorText = "http error: " + xhr.statusText;
+                    }
+                }
+                if (errorText) {reject(errorText)}
+            }
+
+            function processError(err) {
+                reject("Network Error: " + err.target.status);
+            }
+        }
+    )}
+
+    sendAddDocs(CollName:string, DocURL: string, DocCount: number, 
+            Unique: boolean) {
+
+        /*
+        Use the Mongopop API to add X thousand documents (generated) via the supplied Maockaroo URL.
+        */
+
+        let _this = this;
+
+        return new Promise(function(resolve, reject) {
+            var xhr = new XMLHttpRequest();
+            console.log("In addDocs");
+            console.log("baseURL = " + _this.baseURL);
+
+            xhr.open('POST', _this.baseURL + "/addDocs", true);
+            xhr.setRequestHeader("Content-type", "application/json;charset=UTF-8");
+            xhr.send(JSON.stringify({
+                MongoDBURI: _this.MongoDBURI,
+                collectionName: CollName,
+                dataSource: DocURL,
+                numberDocs: DocCount,
+                unique: Unique
+            }));
+            xhr.addEventListener("readystatechange", processRequest, false);
+            xhr.onreadystatechange = processRequest;
+            xhr.onerror = processError;
+            xhr.onabort = processError;
+
+            function processRequest(e) {
+                let errorText = null;
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        console.log(xhr.responseText);
+                        var response = JSON.parse(xhr.responseText);
+                        if (response.success) {
+                            return resolve(response.count);
+                        } else {
+                            errorText = "App failure: " + response.error;
+                        }
+                    } else {
+                        errorText = "http error: " + xhr.statusText;
+                    }
+                }
+                if (errorText) {reject(errorText)}
+            }
+
+            function processError(err) {
+                reject("Network Error: " + err.target.status);
+            }
+        }
+    )}
+
+    sendSampleDocs(CollName:string, NumberDocs: number) {
+
+        /*
+        Use the Mongopop API to fetch a sample of `NumberDocs` documents 
+        from the `CollName` collection.
+        */
+
+        let _this = this;
+
+        return new Promise(function(resolve, reject) {
+            var xhr = new XMLHttpRequest();
+            console.log("In sampleDocs");
+
+            xhr.open('POST', _this.baseURL + "/sampleDocs", true);
+            xhr.setRequestHeader("Content-type", "application/json;charset=UTF-8");
+            xhr.send(JSON.stringify({
+                MongoDBURI: _this.MongoDBURI,
+                collectionName: CollName,
+                numberDocs: NumberDocs
+            }));
+            xhr.addEventListener("readystatechange", processRequest, false);
+            xhr.onreadystatechange = processRequest;
+            xhr.onerror = processError;
+            xhr.onabort = processError;
+
+            function processRequest(e) {
+                let errorText = null;
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        console.log(xhr.responseText);
+                        var response = JSON.parse(xhr.responseText);
+                        if (response.success) {
+                            return resolve(response.documents);
+                        } else {
+                            errorText = "App failure: " + response.error;
+                        }
+                    } else {
+                        errorText = "http error: " + xhr.statusText;
+                    }
+                }
+                if (errorText) {reject(errorText)}
+            }
+
+            function processError(err) {
+                reject("Network Error: " + err.target.status);
+            }
+        }
+    )}
+
+    tryParseJSON (jsonString: string): Object{
+
+        /*
+        Attempts to build an object from the supplied string. Raises an error if
+        the conversion fails (e.g. if it isn't valid JSON format).
+        */
+
+        try {
+            let myObject = JSON.parse(jsonString);
+
+            if (myObject && typeof myObject === "object") {
+                return myObject;
+            }
+        }
+        catch (error) { 
+            let errorString = "Not valid JSON: " + error.message;
+            console.log(errorString);
+            new Error(errorString);
+        }
+        return {};
+    }
+
+    sendUpdateDocs(collName: string, matchPattern: string, dataChange: string, threads: number) {
+
+        let _this = this;
+        let matchObject = null;
+        let changeObject = null
+
+        return new Promise(function(resolve, reject) {
+
+            try {
+                matchObject = _this.tryParseJSON(matchPattern);
+                }
+            catch (error) {
+                let errorString = "Match pattern: " + error.message;
+                console.log(errorString);
+                return reject(errorString);
+            }            
+            try {
+                changeObject = _this.tryParseJSON(dataChange);
+            }
+            catch (error) {
+                let errorString = "Data change: " + error.message;
+                console.log(errorString);
+                return reject(errorString);
+            }
+
+            var xhr = new XMLHttpRequest();
+            console.log("In upDateDocs");
+
+            xhr.open('POST', _this.baseURL + "/updateDocs", true);
+            xhr.setRequestHeader("Content-type", "application/json;charset=UTF-8");
+            xhr.send(JSON.stringify({
+                MongoDBURI: _this.MongoDBURI,
+                collectionName: collName,
+                matchPattern: matchObject,
+                dataChange: changeObject,
+                threads: threads
+            }));
+            xhr.addEventListener("readystatechange", processRequest, false);
+            xhr.onreadystatechange = processRequest;
+            xhr.onerror = processError;
+            xhr.onabort = processError;
+
+            function processRequest(e) {
+                let errorText = null;
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        console.log(xhr.responseText);
+                        var response = JSON.parse(xhr.responseText);
+                        if (response.success) {
+                            return resolve(response.count);
+                        } else {
+                            errorText = "App failure: " + response.error;
+                        }
+                    } else {
+                        errorText = "http error: " + xhr.statusText;
+                    }
+                }
+                if (errorText) {reject(errorText)}
+            }
+
+            function processError(err) {
+                reject("Network Error: " + err.target.status);
+            }
+        }
+    )}
 }

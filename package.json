@@ -1,7 +1,7 @@
 {
-  "name": "hello-world",
+  "name": "mongopop-react-client",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "homepage": "http://localhost:3000/react",
   "devDependencies": {
     "react-scripts": "0.8.5"
