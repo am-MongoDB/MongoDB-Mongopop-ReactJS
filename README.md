@@ -29,7 +29,7 @@ npm run build
 
 And then copy the contents of the `build` directory to somewhere rootable on your 'production' web server.
 
-Browse to `http://localhost:3000/` (or to the IP address or hostname specified in `public/app/app.component.ts`).
+Browse to `http://localhost:3000/react` (or to the IP address or hostname specified in `public/app/app.component.ts`).
 
 ## Usage (in 'production' mode)
 
