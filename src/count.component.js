@@ -59,11 +59,12 @@ export class CountDocuments extends React.Component {
         clearInterval(_this.timerID);
         _this.setState({errorText: err});
       })
-    
-    this.timerID = setInterval(
-      () => this.countOnce(),
-      5000
-    );
+    if (this.state.repeat) {
+      this.timerID = setInterval(
+        () => this.countOnce(),
+        5000
+      );      
+    }
   }
 
   render() {

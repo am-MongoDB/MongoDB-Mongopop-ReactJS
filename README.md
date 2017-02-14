@@ -11,7 +11,7 @@ A React based web tool to populate a [MongoDB Atlas](https://cloud.mongo.com) (o
 
 Prerequisite: have Mongopop running (be default on `localhost:3000`).
 
-Assumes that the Mongopop service is available at `http://localhost:3000/pop` – edit this is `App.j` if required.
+Assumes that the Mongopop service is available at `http://localhost:3000/pop` – edit this in `App.j` if required.
 
 ```bash
 git clone httgit@github.com:am-MongoDB/MongoDB-Mongopop-ReactJS.git
