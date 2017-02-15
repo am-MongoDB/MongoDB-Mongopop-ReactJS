@@ -3,31 +3,52 @@ Service for clients to access the Mongopop and MongoDB Atlas web APIs
 */
 
 export class DataService {
-    getSumfin (what) {
-        return ("You asked me for " + what);
-    }
-
-    getSumfinRemote (url) {
-        return new Promise(function(resolve, reject) {
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', "//ipinfo.io/json", true);
-            xhr.send();
-            xhr.addEventListener("readystatechange", processRequest, false);
-            xhr.onreadystatechange = processRequest;
-            function processRequest(e) {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    var response = JSON.parse(xhr.responseText);
-                    resolve(response.ip);
-                }
-            }
-        }
-        )}
 
     constructor (url) {
         this.baseURL = url;
         this.MongoDBURI = "";
-        console.log("Constructor setting baseURL to " + url);
-        console.log(this);
+    }
+
+    fetchConfig () {
+        /*
+        Config data: {
+            mongodb: {
+                defaultDatabase: string;
+                defaultCollection: string;
+                defaultUri: string;
+            };
+            mockarooUrl: string;
+        }
+        */
+
+        // Ask the MongoPop API for default client config data
+        let _this = this;
+        return new Promise(function(resolve, reject) {
+            var xhr = new XMLHttpRequest();
+
+            xhr.open('GET', _this.baseURL + "/config", true);
+            xhr.send();
+            xhr.addEventListener("readystatechange", processRequest, false);
+            xhr.onreadystatechange = processRequest;
+            xhr.onerror = processError;
+            xhr.onabort = processError;
+
+            function processRequest(e) {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        resolve(response);
+                    } else {
+                        var error = xhr.statusText;
+                        reject("http/app Error: " + error);
+                    }
+                }
+            }
+
+            function processError(err) {
+                reject("Network Error: " + err.target.status);
+            }
+        })
     }
 
     fetchServerIP () {
@@ -35,8 +56,6 @@ export class DataService {
         let _this = this;
         return new Promise(function(resolve, reject) {
             var xhr = new XMLHttpRequest();
-
-            console.log("baseURL = " + _this.baseURL);
 
             xhr.open('GET', _this.baseURL + "/ip", true);
             xhr.send();
@@ -96,11 +115,11 @@ export class DataService {
             // Can now assume that the URI is in the format provided by MongoDB Atlas
             dbInputs.MongoDBUser = dbInputs.MongoDBBaseURI.split('mongodb://')[1].split(':')[0];
             MongoDBURI = dbInputs.MongoDBBaseURI
-                .replace('admin', dbInputs.MongoDBDatabaseName)
-                .replace('PASSWORD', dbInputs.MongoDBUserPassword);
+                .replace('<DATABASE>', dbInputs.MongoDBDatabaseName)
+                .replace('<PASSWORD>', dbInputs.MongoDBUserPassword);
             MongoDBURIRedacted = dbInputs.MongoDBBaseURI
-                .replace('admin', dbInputs.MongoDBDatabaseName)
-                .replace('PASSWORD', "************");
+                .replace('<DATABASE>', dbInputs.MongoDBDatabaseName)
+                .replace('<PASSWORD>', "************");
         }
 
         this.MongoDBURI = MongoDBURI;
@@ -119,8 +138,6 @@ export class DataService {
 
         return new Promise(function(resolve, reject) {
             var xhr = new XMLHttpRequest();
-            console.log("In sendCountDocs");
-            console.log("baseURL = " + _this.baseURL);
 
             xhr.open('POST', _this.baseURL + "/countDocs", true);
             xhr.setRequestHeader("Content-type", "application/json;charset=UTF-8");
@@ -137,7 +154,6 @@ export class DataService {
                 let errorText = null;
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
-                        console.log(xhr.responseText);
                         var response = JSON.parse(xhr.responseText);
                         if (response.success) {
                             return resolve(response.count);
@@ -168,8 +184,6 @@ export class DataService {
 
         return new Promise(function(resolve, reject) {
             var xhr = new XMLHttpRequest();
-            console.log("In addDocs");
-            console.log("baseURL = " + _this.baseURL);
 
             xhr.open('POST', _this.baseURL + "/addDocs", true);
             xhr.setRequestHeader("Content-type", "application/json;charset=UTF-8");
@@ -189,7 +203,6 @@ export class DataService {
                 let errorText = null;
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
-                        console.log(xhr.responseText);
                         var response = JSON.parse(xhr.responseText);
                         if (response.success) {
                             return resolve(response.count);
@@ -220,7 +233,6 @@ export class DataService {
 
         return new Promise(function(resolve, reject) {
             var xhr = new XMLHttpRequest();
-            console.log("In sampleDocs");
 
             xhr.open('POST', _this.baseURL + "/sampleDocs", true);
             xhr.setRequestHeader("Content-type", "application/json;charset=UTF-8");
@@ -238,7 +250,6 @@ export class DataService {
                 let errorText = null;
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
-                        console.log(xhr.responseText);
                         var response = JSON.parse(xhr.responseText);
                         if (response.success) {
                             return resolve(response.documents);
@@ -306,7 +317,6 @@ export class DataService {
             }
 
             var xhr = new XMLHttpRequest();
-            console.log("In upDateDocs");
 
             xhr.open('POST', _this.baseURL + "/updateDocs", true);
             xhr.setRequestHeader("Content-type", "application/json;charset=UTF-8");
@@ -326,7 +336,6 @@ export class DataService {
                 let errorText = null;
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
-                        console.log(xhr.responseText);
                         var response = JSON.parse(xhr.responseText);
                         if (response.success) {
                             return resolve(response.count);

@@ -6,47 +6,100 @@ export class ConnectionInfo extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      MongoDBBaseURI: "",
+      MongoDBDatabaseName: "",
+      MongoDBUser: "",
       needCredentials: false,
-      showPassword: false
+      showPassword: false,
+      MongoDBURI: "",
+      MongoDBURIRedacted: ""
     }
 
-    this.dBInputs = this.props.connectionData.dBInputs;
+    this.MongoDBUserPassword = "";
 
+    //this = this.props.connectionData;
+
+    this.componentDidMount=this.componentDidMount.bind(this);
     this.handleBaseURIChange=this.handleBaseURIChange.bind(this);
     this.handleDatabaseNameChange=this.handleDatabaseNameChange.bind(this);
-    this.handleUsernameChange=this.handleUsernameChange.bind(this);
     this.handlePasswordChange=this.handlePasswordChange.bind(this);
     this.handlePasswordToggle=this.handlePasswordToggle.bind(this);
   }
 
   componentDidMount() {
-    this.props.onChange(this.dBInputs);
+
+  /* Fetch default client config information from the back-end. Expect to 
+    receive:
+
+      {
+          mongodb: {
+              defaultDatabase: string;
+              defaultCollection: string;
+              defaultUri: string;
+          };
+          mockarooUrl: string;
+        }
+    */
+
+    let _this = this;
+
+    this.props.dataService.fetchConfig ()
+    .then(
+        function(results) {
+          _this.setState({MongoDBBaseURI: results.mongodb.defaultUri}, 
+            () => {
+            _this.setState({MongoDBDatabaseName: results.mongodb.defaultDatabase},
+              () => {
+                _this.handleConnectionChange();
+              });
+            });
+        },
+        function(err) {
+          console.log ("fetchConfig: Hit problem: " + err);
+        }
+      )
   }
 
   handleBaseURIChange(event) {
-    this.dBInputs.MongoDBBaseURI = event.target.value;
-    this.props.onChange(this.dBInputs);
-    this.setState({needCredentials: true});
+    this.setState({MongoDBBaseURI: event.target.value}, 
+      () => {
+        this.setState({needCredentials: true},
+          () => {
+            this.handleConnectionChange();
+          });
+      });
   }
 
   handleDatabaseNameChange(event) {
-    this.dBInputs.MongoDBDatabaseName = event.target.value;
-    this.props.onChange(this.dBInputs);
+    this.setState({MongoDBDatabaseName: event.target.value},
+      () => {
+        this.handleConnectionChange();
+      });
   }  
 
-  handleUsernameChange(event) {
-    this.dBInputs.MongoDBUser = event.target.value;
-    this.props.onChange(this.dBInputs);
-  }
-
   handlePasswordChange(event) {
-    this.dBInputs.MongoDBUserPassword = event.target.value;
-    this.props.onChange(this.dBInputs);
+    this.MongoDBUserPassword = event.target.value;
+    this.handleConnectionChange();
   }
 
   handlePasswordToggle(event) {
     console.log ("Password toggle; event data = " + event.target.checked);
     this.setState({showPassword: event.target.checked});
+  }
+
+  handleConnectionChange() {
+
+    var dBInputs = {
+      MongoDBBaseURI: this.state.MongoDBBaseURI,
+      MongoDBDatabaseName: this.state.MongoDBDatabaseName,
+      MongoDBUser: this.state.MongoDBUser,
+      MongoDBUserPassword: this.MongoDBUserPassword
+    }
+
+    const dBURI = this.props.dataService.calculateMongoDBURI(dBInputs);
+    this.setState({MongoDBURI: dBURI.MongoDBURI});
+    this.setState({MongoDBURIRedacted: dBURI.MongoDBURIRedacted});
+    this.setState({MongoDBUser: dBInputs.MongoDBUser});
   }
 
   render() {
@@ -58,9 +111,9 @@ export class ConnectionInfo extends React.Component {
       Credentials = (
         <div>
           <label>
-            MongoDB user password for {this.dBInputs.MongoDBUser}:  
+            MongoDB user password for {this.state.MongoDBUser}:  
             <input type="password" size="20"
-              value={this.dBInputs.MongoDBUserPassword}
+              value={this.MongoDBUserPassword}
               onChange={this.handlePasswordChange}
             />
           </label>
@@ -82,15 +135,15 @@ export class ConnectionInfo extends React.Component {
         <label>
           Connect String (e.g. as provided by MongoDB Atlas): 
           <input type="text" size="50"
-            value={this.dBInputs.MongoDBBaseURI}
+            value={this.state.MongoDBBaseURI}
             onChange={this.handleBaseURIChange}
           />
         </label>
         <br/><br/>
         <label>
-            Preferred database name: 
+            Database name: 
           <input type="text" size="20"
-            value={this.dBInputs.MongoDBDatabaseName}
+            value={this.state.MongoDBDatabaseName}
             onChange={this.handleDatabaseNameChange}
           />
         </label>
@@ -98,8 +151,8 @@ export class ConnectionInfo extends React.Component {
         {Credentials}
         <p>
           MongoDB URI: {this.state.showPassword 
-              ? this.props.connectionData.dBURI.MongoDBURI
-              : this.props.connectionData.dBURI.MongoDBURIRedacted}
+              ? this.state.MongoDBURI
+              : this.state.MongoDBURIRedacted}
         </p>
       </div>
     );

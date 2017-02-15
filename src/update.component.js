@@ -52,45 +52,47 @@ export class UpdateDocuments extends React.Component {
 
   render() {
     return (
-      <div>
-        <h2>Update documents in {this.props.collection}</h2>
+      this.props.dataToPlayWith ? (
         <div>
-          <label>
-            Document pattern to match:  
-            <input type="text" size="100"
-              value={this.state.matchPattern}
-              onChange={this.handleMatchPatternChange}
-            />
-          </label>
-          <br/><br/>          <label>
-            Change to apply to each document:  
-            <input type="text" size="80"
-              value={this.state.changePattern}
-              onChange={this.handleChangePatternChange}
-            />
-          </label>
-          <br/><br/>
-          <label>
-            How many times should this be run (concurrently)?:   
-            <input type="number" min="1" max="80"
-              value={this.state.threads}
-              onChange={this.handleThreadsChange}
-            />
-          </label>
-          <br/>
-          <br/>
-          <button onClick={this.handleUpdateSubmit}>
-            {"Update " + this.props.collection}
-          </button>
-          <br/><br/>
-          <span className="successMessage">
-            {(this.state.numDocsUpdated) ? ("Updated " + this.state.numDocsUpdated.toLocaleString() + " documents in the '" + this.props.collection + "'' collection.") : ""}
-          </span>
-          <span className="errorMessage">
-            {(this.state.errorText) ? this.state.errorText : ""}
-          </span>
+          <h2>Update documents in {this.props.collection}</h2>
+          <div>
+            <label>
+              Document pattern to match:  
+              <input type="text" size="100"
+                value={this.state.matchPattern}
+                onChange={this.handleMatchPatternChange}
+              />
+            </label>
+            <br/><br/>          <label>
+              Change to apply to each document:  
+              <input type="text" size="80"
+                value={this.state.changePattern}
+                onChange={this.handleChangePatternChange}
+              />
+            </label>
+            <br/><br/>
+            <label>
+              How many times should this be run (concurrently)?:   
+              <input type="number" min="1" max="80"
+                value={this.state.threads}
+                onChange={this.handleThreadsChange}
+              />
+            </label>
+            <br/>
+            <br/>
+            <button onClick={this.handleUpdateSubmit}>
+              {"Update " + this.props.collection}
+            </button>
+            <br/><br/>
+            <span className="successMessage">
+              {(this.state.numDocsUpdated) ? ("Updated " + this.state.numDocsUpdated.toLocaleString() + " documents in the '" + this.props.collection + "'' collection.") : ""}
+            </span>
+            <span className="errorMessage">
+              {(this.state.errorText) ? this.state.errorText : ""}
+            </span>
+          </div>
         </div>
-      </div>
+      ) : null
     );
   }
 }

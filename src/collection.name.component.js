@@ -21,7 +21,7 @@ export class CollectionName extends React.Component {
       <div>
         <h2>Collection</h2>
         <label>
-          Choose the collection from the {this.props.database} database: 
+          Choose the collection: 
           <input type="text" size="20"
             value={this.props.collection}
             onChange={this.handleCollectionNameChange}

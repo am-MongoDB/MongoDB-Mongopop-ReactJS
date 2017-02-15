@@ -6,11 +6,11 @@ export class AddDocuments extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      MockarooURL: "http://www.mockaroo.com/536ecbc0/download?count=1000&key=48da1ee0",
+      MockarooURL: "",
       numDocsToAdd: 1,
       uniqueDocs: false,
-      numDocsAdded: null,
-      errorText: null
+      numDocsAdded: "",
+      errorText: ""
     }
 
     this.handleURLChange=this.handleURLChange.bind(this);
@@ -20,6 +20,30 @@ export class AddDocuments extends React.Component {
   }
 
   componentDidMount() {
+    /* Fetch default client config information from the back-end. Expect to 
+    receive:
+
+      {
+          mongodb: {
+              defaultDatabase: string;
+              defaultCollection: string;
+              defaultUri: string;
+          };
+          mockarooUrl: string;
+        }
+    */
+
+    let _this = this;
+
+    this.props.dataService.fetchConfig ()
+    .then(
+        function(results) {
+          _this.setState({MockarooURL: results.mockarooUrl});
+      },
+        function(err) {
+          console.log ("fetchConfig: Hit problem: " + err);
+        }
+      )
   }
 
   handleURLChange(event) {

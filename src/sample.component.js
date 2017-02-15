@@ -24,7 +24,6 @@ export class SampleDocuments extends React.Component {
 
   handleSampleSubmit(event) {
     let _this = this;
-    let dataToWorkWith = false;
 
     this.setState({
       documents: null,
@@ -34,12 +33,12 @@ export class SampleDocuments extends React.Component {
     .then (
       function(results) {
         _this.setState({documents: JSON.stringify(results, null, `\t`)});
-        dataToWorkWith = true;
+        _this.props.onDataToWorkWith(true);
       },
       function(err) {
         _this.setState({errorText: err});
+        _this.props.onDataToWorkWith(false);
       })
-      this.props.onDataToWorkWith(dataToWorkWith);
   }
 
   render() {

@@ -8,7 +8,8 @@ export class CountDocuments extends React.Component {
     this.state = {
       documentCount: null,
       repeat: false,
-      errorText: null
+      errorText: null,
+      countedCollection: ""
     }
 
     this.handleCountSubmit=this.handleCountSubmit.bind(this);
@@ -37,9 +38,12 @@ export class CountDocuments extends React.Component {
     .then (
       function(results) {
         _this.setState({documentCount: results});
+        _this.setState({errorText: ""});
+        _this.setState({countedCollection: _this.props.collection});
       },
       function(err) {
         _this.setState({errorText: err});
+        _this.setState({documentCount: ""});
       })
   }
 
@@ -48,12 +52,13 @@ export class CountDocuments extends React.Component {
     clearInterval(this.timerID);
     this.setState({
       documentCount: null,
-      erorText: null});
+      errorText: null});
 
     this.props.dataService.sendCountDocs(this.props.collection)
     .then (
       function(results) {
         _this.setState({documentCount: results});
+        _this.setState({countedCollection: _this.props.collection});
       },
       function(err) {
         clearInterval(_this.timerID);
@@ -85,7 +90,7 @@ export class CountDocuments extends React.Component {
           </button>
           <br/><br/>
           <span className="successMessage">
-            {(this.state.documentCount) ? ("Collection '" + this.props.collection + "' contains " + this.state.documentCount.toLocaleString() + " documents") : ""}
+            {(this.state.documentCount) ? ("Collection '" + this.state.countedCollection + "' contains " + this.state.documentCount.toLocaleString() + " documents") : ""}
           </span>
           <span className="errorMessage">
             {(this.state.errorText) ? this.state.errorText : ""}

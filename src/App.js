@@ -14,46 +14,18 @@ class MongoPopContainer extends React.Component {
     super(props);
 
     this.state = {
-      connectionData: {
-        dBURI: {
-          MongoDBURI: "", 
-          MongoDBURIRedacted: ""
-        },
-        dBInputs: {
-          MongoDBBaseURI: "mongodb://localhost:27017",
-          MongoDBDatabaseName: "mongopop",
-          MongoDBUser: "",
-          MongoDBUserPassword: ""
-        }     
-      },
-      MongoDBCollectionName: "simples"
+      MongoDBCollectionName: "simples",
+      DataToPlayWith: false
     };
 
-    this.dataToPlayWith = false;
     this.dataService = new DataService("http://localhost:3000/pop");
 
-    this.handleConnectionChange=this.handleConnectionChange.bind(this);
     this.handleCollectionChange=this.handleCollectionChange.bind(this);
     this.handleDataAvailabiltyChange=this.handleDataAvailabiltyChange.bind(this);
-    this.maybeUpdateDocuments=this.maybeUpdateDocuments.bind(this);
 
   }
 
-  handleConnectionChange(dBInputs) {
-
-    console.log("Handling connection change; dbInputs parameter = " + JSON.stringify(dBInputs));
-
-    const dBURI = this.dataService.calculateMongoDBURI(dBInputs);
-    const connectionData = {
-      dBURI: dBURI,
-      dBInputs: dBInputs
-    }
-
-    console.log("New connection data: " + JSON.stringify(connectionData));
-
-    this.setState({connectionData: connectionData});
-
-    console.log("Updated state to " + JSON.stringify(this.state));
+  componentDidMount() {
   }
 
   handleCollectionChange(collection) {
@@ -61,20 +33,7 @@ class MongoPopContainer extends React.Component {
   }
 
   handleDataAvailabiltyChange(dataAvailable) {
-    this.DataToPlayWith = dataAvailable;
-  }
-
-  maybeUpdateDocuments() {
-    if (this.dataToPlayWith) {
-      return (
-        <UpdateDocuments
-          dataService={this.dataService}
-          collection={this.state.MongoDBCollectionName}
-        />
-      )
-    } else {
-      return {}
-    }
+    this.setState({DataToPlayWith: dataAvailable});
   }
 
   render() {
@@ -86,11 +45,10 @@ class MongoPopContainer extends React.Component {
           dataService={this.dataService}
         />
         <ConnectionInfo
-          connectionData={this.state.connectionData}
+          dataService={this.dataService}
           onChange={this.handleConnectionChange}
         />
         <CollectionName
-          database={this.state.connectionData.dBInputs.MongoDBDatabaseName}
           collection={this.state.MongoDBCollectionName}
           onChange={this.handleCollectionChange}
         />
@@ -102,7 +60,11 @@ class MongoPopContainer extends React.Component {
           dataService={this.dataService}
           collection={this.state.MongoDBCollectionName}
         />
-        <maybeUpdateDocuments/>
+        <UpdateDocuments
+          dataService={this.dataService}
+          collection={this.state.MongoDBCollectionName}
+          dataToPlayWith={this.state.DataToPlayWith}
+        />
         <SampleDocuments
           dataService={this.dataService}
           collection={this.state.MongoDBCollectionName}
