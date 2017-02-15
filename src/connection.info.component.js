@@ -83,7 +83,6 @@ export class ConnectionInfo extends React.Component {
   }
 
   handlePasswordToggle(event) {
-    console.log ("Password toggle; event data = " + event.target.checked);
     this.setState({showPassword: event.target.checked});
   }
 
