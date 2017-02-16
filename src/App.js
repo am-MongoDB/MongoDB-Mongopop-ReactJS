@@ -46,7 +46,6 @@ class MongoPopContainer extends React.Component {
         />
         <ConnectionInfo
           dataService={this.dataService}
-          onChange={this.handleConnectionChange}
         />
         <CollectionName
           collection={this.state.MongoDBCollectionName}
