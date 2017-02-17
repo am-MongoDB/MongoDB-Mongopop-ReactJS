@@ -10,7 +10,8 @@ export class AddDocuments extends React.Component {
       numDocsToAdd: 1,
       uniqueDocs: false,
       numDocsAdded: "",
-      errorText: ""
+      errorText: "",
+      addedCollection: this.props.collection
     }
 
     this.handleURLChange=this.handleURLChange.bind(this);
@@ -62,7 +63,8 @@ export class AddDocuments extends React.Component {
     let _this = this;
     this.setState({
       numDocsAdded: null,
-      erorText:     null});
+      erorText: null,
+      addedCollection: this.props.collection});
 
     this.props.dataService.sendAddDocs(this.props.collection, this.state.MockarooURL, this.state.numDocsToAdd, this.state.uniqueDocs)
     .then (
@@ -111,7 +113,7 @@ export class AddDocuments extends React.Component {
           </button>
           <br/><br/>
           <span className="successMessage">
-            {(this.state.numDocsAdded) ? ("Added " + this.state.numDocsAdded.toLocaleString() + " documents to '" + this.props.collection + "'' collection.") : ""}
+            {(this.state.numDocsAdded) ? ("Added " + this.state.numDocsAdded.toLocaleString() + " documents to '" + this.state.addedCollection + "'' collection.") : ""}
           </span>
           <span className="errorMessage">
             {(this.state.errorText) ? this.state.errorText : ""}
