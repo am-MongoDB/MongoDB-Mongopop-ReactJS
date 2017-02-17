@@ -113,7 +113,7 @@ export class AddDocuments extends React.Component {
           </button>
           <br/><br/>
           <span className="successMessage">
-            {(this.state.numDocsAdded) ? ("Added " + this.state.numDocsAdded.toLocaleString() + " documents to '" + this.state.addedCollection + "'' collection.") : ""}
+            {(this.state.numDocsAdded) ? ("Added " + this.state.numDocsAdded.toLocaleString() + " documents to '" + this.state.addedCollection + "' collection.") : ""}
           </span>
           <span className="errorMessage">
             {(this.state.errorText) ? this.state.errorText : ""}
