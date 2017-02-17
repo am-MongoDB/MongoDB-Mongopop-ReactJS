@@ -10,7 +10,8 @@ export class UpdateDocuments extends React.Component {
       changePattern: '{"$set":{"mongopopComment": "MongoPop has been here"}, "$inc":{"mongopopCounter": 1}}',
       threads: 1,
       numDocsUpdated: null,
-      errorText: null
+      errorText: null,
+      updatedCollection: this.props.collection
     }
 
     this.handleMatchPatternChange=this.handleMatchPatternChange.bind(this);
@@ -38,7 +39,8 @@ export class UpdateDocuments extends React.Component {
     let _this = this;
     this.setState({
       numDocsUpdated: null,
-      erorText: null});
+      errorText: null,
+      updatedCollection: this.props.collection});
 
     this.props.dataService.sendUpdateDocs(this.props.collection, this.state.matchPattern, this.state.changePattern, this.state.threads)
     .then (
@@ -85,7 +87,7 @@ export class UpdateDocuments extends React.Component {
             </button>
             <br/><br/>
             <span className="successMessage">
-              {(this.state.numDocsUpdated) ? ("Updated " + this.state.numDocsUpdated.toLocaleString() + " documents in the '" + this.props.collection + "'' collection.") : ""}
+              {(this.state.numDocsUpdated != null) ? ("Updated " + this.state.numDocsUpdated.toLocaleString() + " documents in the '" + this.state.updatedCollection + "' collection.") : ""}
             </span>
             <span className="errorMessage">
               {(this.state.errorText) ? this.state.errorText : ""}
