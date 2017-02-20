@@ -14,7 +14,7 @@ class MongoPopContainer extends React.Component {
     super(props);
 
     this.state = {
-      MongoDBCollectionName: "simples",
+      MongoDBCollectionName: "",
       DataToPlayWith: false
     };
 
@@ -48,7 +48,7 @@ class MongoPopContainer extends React.Component {
           dataService={this.dataService}
         />
         <CollectionName
-          collection={this.state.MongoDBCollectionName}
+          dataService={this.dataService}
           onChange={this.handleCollectionChange}
         />
         <AddDocuments
